@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="C:\Users\Kamini\.gradle\caches\modules-2\files-2.1\com.squareup.okhttp\okhttp\2.7.0\1477ec5caf8319ab4b51eb43553cd66aa86fdea5\okhttp-2.7.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="1477ec5caf8319ab4b51eb43553cd66aa86fdea5">
+        <dex dex="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\pre-dexed\debug\okhttp-2.7.0-41038c2f0647cdf42dc24e0e663f5ea1226844ad.jar" />
+    </item>
+    <item
+        jar="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\libs\volley.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="c68094cbd011a3f9dccbfe16e77a2cf43622e277">
+        <dex dex="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\pre-dexed\debug\volley-1eca88cab1e5023054fc918ce8d575c224a44701.jar" />
+    </item>
+    <item
+        jar="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\exploded-aar\com.android.support\support-v13\22.0.0\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="7f9cca1caa023a880b00c382bcc5c90245ae4895">
+        <dex dex="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\pre-dexed\debug\classes-c7fee78c4328eb5cdd26c834a4253c33095682eb.jar" />
+    </item>
+    <item
+        jar="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\exploded-aar\com.android.support\cardview-v7\22.0.0\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="11842de6a309c447b3a3d60d73ad637a87c58994">
+        <dex dex="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\pre-dexed\debug\classes-e81885c2507062c858f6e423540393954b245719.jar" />
+    </item>
+    <item
+        jar="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\exploded-aar\com.android.support\support-v13\22.0.0\libs\internal_impl-22.0.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="def3eff2b7b4774d96ae15b07b3fc0111edbfe24">
+        <dex dex="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\pre-dexed\debug\internal_impl-22.0.0-359c655ec5141d5189474a044e3617c271d2dc0b.jar" />
+    </item>
+    <item
+        jar="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\exploded-aar\com.android.support\palette-v7\22.0.0\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="285506e1cf9d5a66878e2aab3884b3427f8734e9">
+        <dex dex="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\pre-dexed\debug\classes-0c7509ae773aa7809075b7eaa718b557f7ce1dbb.jar" />
+    </item>
+    <item
+        jar="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\exploded-aar\com.android.support\appcompat-v7\22.0.0\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="d84409890828e07d344a3b9b1da545dba9897b51">
+        <dex dex="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\pre-dexed\debug\classes-7336e917bc3b71bdb518754dfd47f02d9809e74d.jar" />
+    </item>
+    <item
+        jar="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\exploded-aar\com.android.support\recyclerview-v7\22.0.0\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="c6d79137693d494dee16372d3921f919eb724ced">
+        <dex dex="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\pre-dexed\debug\classes-feca1ff1e49ad168c72f3bfee2fa9bf6b2530583.jar" />
+    </item>
+    <item
+        jar="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\exploded-aar\com.android.support\support-v4\22.0.0\libs\internal_impl-22.0.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="b5b92f469d515a13d778900f6d50c03d12f35504">
+        <dex dex="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\pre-dexed\debug\internal_impl-22.0.0-7b65c03b6885f8ee8d2aa2122aee3bf16cb04c6f.jar" />
+    </item>
+    <item
+        jar="C:\Users\Kamini\.gradle\caches\modules-2\files-2.1\com.squareup.okio\okio\1.6.0\98476622f10715998eacf9240d6b479f12c66143\okio-1.6.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="98476622f10715998eacf9240d6b479f12c66143">
+        <dex dex="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\pre-dexed\debug\okio-1.6.0-460955367f568c7b372230d2d0d44e84b2e08619.jar" />
+    </item>
+    <item
+        jar="C:\Users\Kamini\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\22.0.0\support-annotations-22.0.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="685d0b2c590447e85284ed84712cb363ba04eff8">
+        <dex dex="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\pre-dexed\debug\support-annotations-22.0.0-75edb13a6b2bdf23b7f3711e3d83ef3d430f07b6.jar" />
+    </item>
+    <item
+        jar="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\exploded-aar\com.android.support\support-v4\22.0.0\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="4e86306289ace4aa0cfec44a05ed2b410d36989d">
+        <dex dex="C:\Users\Kamini\AndroidStudioProjects\xyzreader\xyzreader\XYZReader\build\intermediates\pre-dexed\debug\classes-94dcb3c183900df16a9d8effc5272d16826bf8a2.jar" />
+    </item>
+
+</items>

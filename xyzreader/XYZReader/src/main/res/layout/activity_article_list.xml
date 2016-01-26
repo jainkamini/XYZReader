@@ -22,6 +22,7 @@
             android:paddingLeft="@dimen/fab_margin"
             android:background="@color/primary"
             android:gravity="bottom"
+            app:layout_collapseMode="pin"
             app:layout_scrollFlags="scroll|enterAlways"
             >
 

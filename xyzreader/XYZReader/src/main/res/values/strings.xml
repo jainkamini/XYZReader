@@ -9,5 +9,5 @@
 
     <string name="up">Up</string>
     <string name="no_information_available">No information available.</string>
-
+    <string name="empty_recycler_view_no_network">The network is not available. Please check the internet connectivity.</string>
 </resources>

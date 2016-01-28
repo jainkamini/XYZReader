@@ -61,6 +61,8 @@ public class ArticleDetailFragment extends Fragment implements
     private String mTitle;
 
     private Toolbar mTlbr;
+    private static final String ARG_POSITION = "transition_string_position";
+    private int mPosition;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -69,8 +71,9 @@ public class ArticleDetailFragment extends Fragment implements
     public ArticleDetailFragment() {
     }
 
-    public static ArticleDetailFragment newInstance(long itemId) {
+    public static ArticleDetailFragment newInstance(long itemId,int position) {
         Bundle arguments = new Bundle();
+        arguments.putInt(ARG_POSITION, position);
         arguments.putLong(ARG_ITEM_ID, itemId);
         ArticleDetailFragment fragment = new ArticleDetailFragment();
         fragment.setArguments(arguments);
@@ -84,7 +87,9 @@ public class ArticleDetailFragment extends Fragment implements
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             mItemId = getArguments().getLong(ARG_ITEM_ID);
         }
-
+        if (getArguments().containsKey(ARG_POSITION)) {
+            mPosition = getArguments().getInt(ARG_POSITION);
+        }
 
     }
 
@@ -107,7 +112,7 @@ public class ArticleDetailFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
-
+        mRootView.findViewById(R.id.photo).setTransitionName(getString(R.string.transition_image) + String.valueOf(mPosition));
         mCTlbr = (CollapsingToolbarLayout) mRootView.findViewById(R.id.detail_collapsing);
 
         AppBarLayout appbarLayout = (AppBarLayout) mRootView.findViewById(R.id.detail_appbar);
@@ -236,6 +241,7 @@ public class ArticleDetailFragment extends Fragment implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        ((ArticleDetailActivity)getActivity()).scheduleStartPostponedTransition(mPhotoView);
         if (!isAdded()) {
             if (cursor != null) {
                 cursor.close();

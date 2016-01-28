@@ -25,7 +25,7 @@
     <color name="abc_search_url_text_selected">@android:color/black</color>
     <!-- From: file:/C:/Users/Kamini/AndroidStudioProjects/xyzreader/xyzreader/XYZReader/src/main/res/values/colors.xml -->
     <eat-comment/>
-    <color name="accent">#FFC107</color>
+    <color name="accent">#7C4DFF</color>
     <!-- From: file:/C:/Users/Kamini/AndroidStudioProjects/xyzreader/xyzreader/XYZReader/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.1/res/values/values.xml -->
     <eat-comment/>
     <color name="accent_material_dark">@color/material_deep_teal_200</color>
@@ -408,6 +408,8 @@
     <string name="status_bar_notification_info_overflow">999+</string>
     <!-- From: file:/C:/Users/Kamini/AndroidStudioProjects/xyzreader/xyzreader/XYZReader/src/main/res/values/strings.xml -->
     <eat-comment/>
+    <string name="transition_image">Transition Image</string>
+    <string name="transition_text">Transition Text</string>
     <string name="up">Up</string>
     <string name="welcome_xyz_reader">Welcome to XYZ Reader!</string>
     <!-- From: file:/C:/Users/Kamini/AndroidStudioProjects/xyzreader/xyzreader/XYZReader/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.1.1/res/values/values.xml -->

@@ -1,12 +1,15 @@
 package com.example.xyzreader.ui;
 
+import android.app.ActivityOptions;
 import android.app.LoaderManager;
+import android.app.SharedElementCallback;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -18,6 +21,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,6 +35,9 @@ import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.data.UpdaterService;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * An activity representing a list of Articles. This activity has different presentations for
@@ -46,7 +53,15 @@ public class ArticleListActivity extends AppCompatActivity implements
     private RecyclerView mRecyclerView;
     private TextView mEmptyView;
     private boolean mIsRefreshing = false;
+
+    static final String EXTRA_STARTING_ALBUM_POSITION = "extra_starting_item_position";
+    static final String EXTRA_CURRENT_ALBUM_POSITION = "extra_current_item_position";
+    private Bundle mTmpReenterState;
     //private CoordinatorLayout toolbarContainerView;
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,8 +194,23 @@ public class ArticleListActivity extends AppCompatActivity implements
 
 
 
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
+                   // startActivity(new Intent(Intent.ACTION_VIEW,
+                      //      ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
+
+                    if (Build.VERSION.SDK_INT >= 21) {
+
+                        Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
+                                ArticleListActivity.this, view.findViewById(R.id.thumbnail),
+                                view.findViewById(R.id.thumbnail).getTransitionName()).toBundle();
+
+                        startActivity(new Intent(Intent.ACTION_VIEW,
+                                ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())))
+                                .putExtra("transition", view.findViewById(R.id.list_cardview)
+                                        .getTransitionName()), bundle);
+                    } else {
+                        startActivity(new Intent(Intent.ACTION_VIEW,
+                                ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
+                    }
 
                 }
             });
@@ -190,6 +220,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             mCursor.moveToPosition(position);
+            holder.thumbnailView.setTransitionName(getString(R.string.transition_image) + position);
             holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
             holder.subtitleView.setText(
                     DateUtils.getRelativeTimeSpanString(

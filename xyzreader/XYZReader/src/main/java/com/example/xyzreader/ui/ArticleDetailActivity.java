@@ -11,9 +11,11 @@ import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 
 import com.example.xyzreader.R;
@@ -38,9 +40,15 @@ public class ArticleDetailActivity extends ActionBarActivity
     private View mUpButtonContainer;
     private View mUpButton;
 
+    private ArticleDetailFragment mCurrentDetailsFragment;
+    private int mCurrentPosition;
+    private int mStartingPosition;
+    private boolean mIsReturning;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        postponeEnterTransition();
        /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
@@ -70,6 +78,7 @@ public class ArticleDetailActivity extends ActionBarActivity
             public void onPageSelected(int position) {
                 if (mCursor != null) {
                     mCursor.moveToPosition(position);
+                    mCurrentPosition = position;
                 }
                 mSelectedItemId = mCursor.getLong(ArticleLoader.Query._ID);
 
@@ -86,6 +95,27 @@ public class ArticleDetailActivity extends ActionBarActivity
         }
 
     }
+
+
+    public Integer getmCurrentPosition() {
+
+        return mCurrentPosition;
+    }
+
+
+    public void scheduleStartPostponedTransition(final View sharedElement) {
+        sharedElement.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
+                        startPostponedEnterTransition();
+                        return true;
+                    }
+                });
+    }
+
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -139,7 +169,7 @@ public class ArticleDetailActivity extends ActionBarActivity
         @Override
         public Fragment getItem(int position) {
             mCursor.moveToPosition(position);
-            return ArticleDetailFragment.newInstance(mCursor.getLong(ArticleLoader.Query._ID));
+            return ArticleDetailFragment.newInstance(mCursor.getLong(ArticleLoader.Query._ID), position);
         }
 
         @Override

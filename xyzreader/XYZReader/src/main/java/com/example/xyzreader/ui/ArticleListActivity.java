@@ -27,6 +27,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,7 +48,7 @@ import java.util.Map;
  */
 public class ArticleListActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
-
+    private static final String TAG = ArticleListActivity.class.getSimpleName();
     private Toolbar mToolbar;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
@@ -60,7 +61,42 @@ public class ArticleListActivity extends AppCompatActivity implements
     //private CoordinatorLayout toolbarContainerView;
 
 
+    private final SharedElementCallback mCallback = new SharedElementCallback() {
+        @Override
+        public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+            if (mTmpReenterState != null) {
+                int startingPosition = mTmpReenterState.getInt(EXTRA_STARTING_ALBUM_POSITION);
+                int currentPosition = mTmpReenterState.getInt(EXTRA_CURRENT_ALBUM_POSITION);
+                if (startingPosition != currentPosition) {
+                    // If startingPosition != currentPosition the user must have swiped to a
+                    // different page in the DetailsActivity. We must update the shared element
+                    // so that the correct one falls into place.
+                    String newTransitionName =getString(R.string.transition_image) + currentPosition;
+                    View newSharedElement = mRecyclerView.findViewWithTag(newTransitionName);
+                    if (newSharedElement != null) {
+                        names.clear();
+                        names.add(newTransitionName);
+                        sharedElements.clear();
+                        sharedElements.put(newTransitionName, newSharedElement);
+                    }
+                }
 
+                mTmpReenterState = null;
+            } else {
+                // If mTmpReenterState is null, then the activity is exiting.
+                View navigationBar = findViewById(android.R.id.navigationBarBackground);
+                View statusBar = findViewById(android.R.id.statusBarBackground);
+                if (navigationBar != null) {
+                    names.add(navigationBar.getTransitionName());
+                    sharedElements.put(navigationBar.getTransitionName(), navigationBar);
+                }
+                if (statusBar != null) {
+                    names.add(statusBar.getTransitionName());
+                    sharedElements.put(statusBar.getTransitionName(), statusBar);
+                }
+            }
+        }
+    };
 
 
     @Override
@@ -68,7 +104,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
 
-
+        setExitSharedElementCallback(mCallback);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -104,6 +140,27 @@ public class ArticleListActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    public void onActivityReenter(int requestCode, Intent data) {
+        super.onActivityReenter(requestCode, data);
+        mTmpReenterState = new Bundle(data.getExtras());
+        int startingPosition = mTmpReenterState.getInt(EXTRA_STARTING_ALBUM_POSITION);
+        int currentPosition = mTmpReenterState.getInt(EXTRA_CURRENT_ALBUM_POSITION);
+        if (startingPosition != currentPosition) {
+            mRecyclerView.scrollToPosition(currentPosition);
+        }
+        postponeEnterTransition();
+        mRecyclerView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+                // TODO: figure out why it is necessary to request layout here in order to get a smooth transition.
+                mRecyclerView.requestLayout();
+                startPostponedEnterTransition();
+                return true;
+            }
+        });
+    }
     private void refresh() {
         startService(new Intent(this, UpdaterService.class));
     }
@@ -206,7 +263,11 @@ public class ArticleListActivity extends AppCompatActivity implements
                         startActivity(new Intent(Intent.ACTION_VIEW,
                                 ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())))
                                 .putExtra("transition", view.findViewById(R.id.list_cardview)
-                                        .getTransitionName()), bundle);
+                                        .getTransitionName())
+                                        .putExtra("EXTRA_STARTING_ALBUM_POSITION",vh.getAdapterPosition() )
+                                ,
+
+                                bundle);
                     } else {
                         startActivity(new Intent(Intent.ACTION_VIEW,
                                 ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));

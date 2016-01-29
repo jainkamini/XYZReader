@@ -11,6 +11,8 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ShareCompat;
@@ -19,10 +21,12 @@ import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
+import android.transition.Transition;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -30,6 +34,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
+
+import javax.security.auth.callback.Callback;
 
 /**
  * A fragment representing a single Article detail screen. This fragment is
@@ -59,21 +65,25 @@ public class ArticleDetailFragment extends Fragment implements
     private int mStatusBarFullOpacityBottom;
     private CollapsingToolbarLayout mCTlbr;
     private String mTitle;
-
+    private boolean mIsTransitioning;
     private Toolbar mTlbr;
     private static final String ARG_POSITION = "transition_string_position";
-    private int mPosition;
-
+    private static final String ARG_CURRENTPOSITION = "transition_current_position";
+      private int mAlbumPosition;;
+    private int mStartingPosition;
+    private long mBackgroundImageFadeMillis;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
+
     public ArticleDetailFragment() {
     }
 
-    public static ArticleDetailFragment newInstance(long itemId,int position) {
+    public static ArticleDetailFragment newInstance(long itemId,int position, int startingPosition) {
         Bundle arguments = new Bundle();
-        arguments.putInt(ARG_POSITION, position);
+        arguments.putInt(ARG_CURRENTPOSITION, position);
+        arguments.putInt(ARG_POSITION, startingPosition);
         arguments.putLong(ARG_ITEM_ID, itemId);
         ArticleDetailFragment fragment = new ArticleDetailFragment();
         fragment.setArguments(arguments);
@@ -88,9 +98,11 @@ public class ArticleDetailFragment extends Fragment implements
             mItemId = getArguments().getLong(ARG_ITEM_ID);
         }
         if (getArguments().containsKey(ARG_POSITION)) {
-            mPosition = getArguments().getInt(ARG_POSITION);
+            mStartingPosition = getArguments().getInt(ARG_POSITION);
         }
-
+        mAlbumPosition=getArguments().getInt(ARG_CURRENTPOSITION);
+        mIsTransitioning = savedInstanceState == null && mStartingPosition == mAlbumPosition;
+        mBackgroundImageFadeMillis = 1000;
     }
 
     public ArticleDetailActivity getActivityCast() {
@@ -112,19 +124,24 @@ public class ArticleDetailFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
-        mRootView.findViewById(R.id.photo).setTransitionName(getString(R.string.transition_image) + String.valueOf(mPosition));
+        mPhotoView=(ImageView) mRootView.findViewById(R.id.photo);
+        mPhotoView.setTransitionName(getString(R.string.transition_image) + String.valueOf(mAlbumPosition));
+
+       // mRootView.findViewById(R.id.photo).setTransitionName(getString(R.string.transition_image) + String.valueOf(mAlbumPosition));
         mCTlbr = (CollapsingToolbarLayout) mRootView.findViewById(R.id.detail_collapsing);
 
         AppBarLayout appbarLayout = (AppBarLayout) mRootView.findViewById(R.id.detail_appbar);
 
 
-        mPhotoView = (ImageView) mRootView.findViewById(R.id.photo);
+
 
 
         mTlbr = (Toolbar) mRootView.findViewById(R.id.detail_toolbar);
+
         mTlbr.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+           //    startPostponedEnterTransition();
                 getActivity().onBackPressed();
             }
         });
@@ -140,11 +157,47 @@ public class ArticleDetailFragment extends Fragment implements
         });
 
         bindViews();
+
         return mRootView;
 
 
     }
+    /**
+     * Returns the shared element that should be transitioned back to the previous Activity,
+     * or null if the view is not visible on the screen.
+     */
+    @Nullable
+    ImageView getAlbumImage() {
 
+        if (isViewInBounds(getActivity().getWindow().getDecorView(), mPhotoView)) {
+            return mPhotoView;
+        }
+        return null;
+
+    }
+
+    /**
+     * Returns true if {@param view} is contained within {@param container}'s bounds.
+     */
+    private static boolean isViewInBounds(@NonNull View container, @NonNull View view) {
+        Rect containerBounds = new Rect();
+        container.getHitRect(containerBounds);
+        return view.getLocalVisibleRect(containerBounds);
+    }
+
+
+    private void startPostponedEnterTransition() {
+        if (mAlbumPosition == mStartingPosition) {
+            mPhotoView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    mPhotoView.getViewTreeObserver().removeOnPreDrawListener(this);
+                    getActivity().startPostponedEnterTransition();
+                    return true;
+                }
+            });
+        }
+    }
     /*private void updateStatusBar() {
         int color = 0;
         if (mPhotoView != null && mTopInset != 0 && mScrollY > 0) {
@@ -203,13 +256,15 @@ public class ArticleDetailFragment extends Fragment implements
 
             bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY)));
             //TODO: Replace thumb with photo url. Usingthimb for shared transition testing purpose.
+
             ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
                     .get(mCursor.getString(ArticleLoader.Query.THUMB_URL), new ImageLoader.ImageListener() {
                         @Override
                         public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
+                           // startPostponedEnterTransition();
                             Bitmap bitmap = imageContainer.getBitmap();
                             if (bitmap != null) {
-
+                                startPostponedEnterTransition();
                                 Palette p = Palette.from(bitmap).generate();
                                 mMutedColor = p.getDarkMutedColor(0xFF333333);
                                 mPhotoView.setImageBitmap(imageContainer.getBitmap());
@@ -222,6 +277,9 @@ public class ArticleDetailFragment extends Fragment implements
 
                         @Override
                         public void onErrorResponse(VolleyError volleyError) {
+                            Log.e(TAG,"Error......"+mAlbumPosition+mStartingPosition);
+
+
 
                         }
                     });
@@ -241,7 +299,8 @@ public class ArticleDetailFragment extends Fragment implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        ((ArticleDetailActivity)getActivity()).scheduleStartPostponedTransition(mPhotoView);
+        startPostponedEnterTransition();
+       // ((ArticleDetailActivity)getActivity()).scheduleStartPostponedTransition(mPhotoView);
         if (!isAdded()) {
             if (cursor != null) {
                 cursor.close();

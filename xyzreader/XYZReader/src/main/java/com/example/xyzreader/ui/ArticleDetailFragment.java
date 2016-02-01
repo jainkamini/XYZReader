@@ -57,6 +57,7 @@ public class ArticleDetailFragment extends Fragment implements
     private DrawInsetsFrameLayout mDrawInsetsFrameLayout;
     private ColorDrawable mStatusBarColorDrawable;
 
+
     private int mTopInset;
     private View mPhotoContainerView;
     public ImageView mPhotoView;
@@ -126,7 +127,6 @@ public class ArticleDetailFragment extends Fragment implements
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
         mPhotoView=(ImageView) mRootView.findViewById(R.id.photo);
 
-
        // mRootView.findViewById(R.id.photo).setTransitionName(getString(R.string.transition_image) + String.valueOf(mAlbumPosition));
         mCTlbr = (CollapsingToolbarLayout) mRootView.findViewById(R.id.detail_collapsing);
 
@@ -162,6 +162,9 @@ public class ArticleDetailFragment extends Fragment implements
 
 
     }
+
+
+
     /**
      * Returns the shared element that should be transitioned back to the previous Activity,
      * or null if the view is not visible on the screen.
@@ -272,34 +275,36 @@ public class ArticleDetailFragment extends Fragment implements
             bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY)));
             //TODO: Replace thumb with photo url. Usingthimb for shared transition testing purpose.
 
+
+
             ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
                     .get(mCursor.getString(ArticleLoader.Query.THUMB_URL), new ImageLoader.ImageListener() {
 
+                @Override
+                public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
+                  //  startPostponedEnterTransition();
+
+                    Bitmap bitmap = imageContainer.getBitmap();
+                    if (bitmap != null) {
+                         startPostponedEnterTransition();
+                        Palette p = Palette.from(bitmap).generate();
+                        mMutedColor = p.getDarkMutedColor(0xFF333333);
+                        mPhotoView.setImageBitmap(imageContainer.getBitmap());
+                        mRootView.findViewById(R.id.meta_bar)
+                                .setBackgroundColor(mMutedColor);
+
+
+                    }
+                }
+
+
                         @Override
-                        public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
-                            startPostponedEnterTransition();
-
-                            Bitmap bitmap = imageContainer.getBitmap();
-                            if (bitmap != null) {
-                              //  startPostponedEnterTransition();
-                                Palette p = Palette.from(bitmap).generate();
-                                mMutedColor = p.getDarkMutedColor(0xFF333333);
-                                mPhotoView.setImageBitmap(imageContainer.getBitmap());
-                                mRootView.findViewById(R.id.meta_bar)
-                                        .setBackgroundColor(mMutedColor);
+                public void onErrorResponse(VolleyError volleyError) {
+                    Log.e(TAG, "Error......" + mItemPosition + mStartingPosition);
 
 
-                            }
-                        }
-
-                        @Override
-                        public void onErrorResponse(VolleyError volleyError) {
-                            Log.e(TAG,"Error......"+mItemPosition+mStartingPosition);
-
-
-
-                        }
-                    });
+                }
+            });
 
         } else {
             mRootView.setVisibility(View.GONE);

@@ -245,7 +245,11 @@ public class ArticleDetailActivity extends ActionBarActivity
             super(fm);
         }
 
-
+        @Override
+        public void setPrimaryItem(ViewGroup container, int position, Object object) {
+            super.setPrimaryItem(container, position, object);
+            mCurrentDetailsFragment = (ArticleDetailFragment) object;
+        }
 
         @Override
         public Fragment getItem(int position) {

@@ -59,7 +59,7 @@ public class ArticleDetailFragment extends Fragment implements
 
     private int mTopInset;
     private View mPhotoContainerView;
-    private ImageView mPhotoView;
+    public ImageView mPhotoView;
     private int mScrollY;
     private boolean mIsCard = false;
     private int mStatusBarFullOpacityBottom;
@@ -69,7 +69,7 @@ public class ArticleDetailFragment extends Fragment implements
     private Toolbar mTlbr;
     private static final String ARG_POSITION = "transition_string_position";
     private static final String ARG_CURRENTPOSITION = "transition_current_position";
-      private int mAlbumPosition;;
+      private int mItemPosition;;
     private int mStartingPosition;
     private long mBackgroundImageFadeMillis;
     /**
@@ -100,8 +100,8 @@ public class ArticleDetailFragment extends Fragment implements
         if (getArguments().containsKey(ARG_POSITION)) {
             mStartingPosition = getArguments().getInt(ARG_POSITION);
         }
-        mAlbumPosition=getArguments().getInt(ARG_CURRENTPOSITION);
-        mIsTransitioning = savedInstanceState == null && mStartingPosition == mAlbumPosition;
+        mItemPosition=getArguments().getInt(ARG_CURRENTPOSITION);
+        mIsTransitioning = savedInstanceState == null && mStartingPosition == mItemPosition;
         mBackgroundImageFadeMillis = 1000;
     }
 
@@ -125,7 +125,7 @@ public class ArticleDetailFragment extends Fragment implements
                              Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
         mPhotoView=(ImageView) mRootView.findViewById(R.id.photo);
-        mPhotoView.setTransitionName(getString(R.string.transition_image) + String.valueOf(mAlbumPosition));
+
 
        // mRootView.findViewById(R.id.photo).setTransitionName(getString(R.string.transition_image) + String.valueOf(mAlbumPosition));
         mCTlbr = (CollapsingToolbarLayout) mRootView.findViewById(R.id.detail_collapsing);
@@ -169,10 +169,10 @@ public class ArticleDetailFragment extends Fragment implements
     @Nullable
     ImageView getAlbumImage() {
 
-        if (isViewInBounds(getActivity().getWindow().getDecorView(), mPhotoView)) {
+       // if (isViewInBounds(getActivity().getWindow().getDecorView(), mPhotoView)) {
             return mPhotoView;
-        }
-        return null;
+       // }
+      //  return null;
 
     }
 
@@ -187,7 +187,7 @@ public class ArticleDetailFragment extends Fragment implements
 
 
     private void startPostponedEnterTransition() {
-        if (mAlbumPosition == mStartingPosition) {
+        if (mItemPosition == mStartingPosition) {
             mPhotoView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {
@@ -198,6 +198,20 @@ public class ArticleDetailFragment extends Fragment implements
             });
         }
     }
+
+    /*public void scheduleStartPostponedTransition() {
+        if (mAlbumPosition == mStartingPosition) {
+            mPhotoView.getViewTreeObserver().addOnPreDrawListener(
+                    new ViewTreeObserver.OnPreDrawListener() {
+                        @Override
+                        public boolean onPreDraw() {
+                            mPhotoView.getViewTreeObserver().removeOnPreDrawListener(this);
+                            getActivity(). startPostponedEnterTransition();
+                            return true;
+                        }
+                    });
+        }
+    }*/
     /*private void updateStatusBar() {
         int color = 0;
         if (mPhotoView != null && mTopInset != 0 && mScrollY > 0) {
@@ -237,7 +251,8 @@ public class ArticleDetailFragment extends Fragment implements
         bylineView.setMovementMethod(new LinkMovementMethod());
         TextView bodyView = (TextView) mRootView.findViewById(R.id.article_body);
         bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
-
+        mPhotoView.setTransitionName(getString(R.string.transition_image) + String.valueOf(mItemPosition));
+        startPostponedEnterTransition();
         if (mCursor != null) {
             mRootView.setAlpha(0);
             mRootView.setVisibility(View.VISIBLE);
@@ -259,12 +274,14 @@ public class ArticleDetailFragment extends Fragment implements
 
             ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
                     .get(mCursor.getString(ArticleLoader.Query.THUMB_URL), new ImageLoader.ImageListener() {
+
                         @Override
                         public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
-                           // startPostponedEnterTransition();
+                            startPostponedEnterTransition();
+
                             Bitmap bitmap = imageContainer.getBitmap();
                             if (bitmap != null) {
-                                startPostponedEnterTransition();
+                              //  startPostponedEnterTransition();
                                 Palette p = Palette.from(bitmap).generate();
                                 mMutedColor = p.getDarkMutedColor(0xFF333333);
                                 mPhotoView.setImageBitmap(imageContainer.getBitmap());
@@ -277,7 +294,7 @@ public class ArticleDetailFragment extends Fragment implements
 
                         @Override
                         public void onErrorResponse(VolleyError volleyError) {
-                            Log.e(TAG,"Error......"+mAlbumPosition+mStartingPosition);
+                            Log.e(TAG,"Error......"+mItemPosition+mStartingPosition);
 
 
 
@@ -299,7 +316,7 @@ public class ArticleDetailFragment extends Fragment implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        startPostponedEnterTransition();
+
        // ((ArticleDetailActivity)getActivity()).scheduleStartPostponedTransition(mPhotoView);
         if (!isAdded()) {
             if (cursor != null) {
@@ -316,12 +333,14 @@ public class ArticleDetailFragment extends Fragment implements
         }
 
         bindViews();
+
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
         mCursor = null;
         bindViews();
+        startPostponedEnterTransition();
     }
 
 }

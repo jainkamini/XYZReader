@@ -55,18 +55,18 @@ public class ArticleListActivity extends AppCompatActivity implements
     private TextView mEmptyView;
     private boolean mIsRefreshing = false;
 
-    static final String EXTRA_STARTING_ALBUM_POSITION = "extra_starting_item_position";
-    static final String EXTRA_CURRENT_ALBUM_POSITION = "extra_current_item_position";
+    static final String EXTRA_STARTING_ARTICLE_POSITION = "extra_starting_item_position";
+    static final String EXTRA_CURRENT_ARTICLE_POSITION = "extra_current_item_position";
     private Bundle mTmpReenterState;
     //private CoordinatorLayout toolbarContainerView;
 
-
+    @SuppressWarnings("NewApi")
     private final SharedElementCallback mCallback = new SharedElementCallback() {
         @Override
         public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
             if (mTmpReenterState != null) {
-                int startingPosition = mTmpReenterState.getInt(EXTRA_STARTING_ALBUM_POSITION);
-                int currentPosition = mTmpReenterState.getInt(EXTRA_CURRENT_ALBUM_POSITION);
+                int startingPosition = mTmpReenterState.getInt(EXTRA_STARTING_ARTICLE_POSITION);
+                int currentPosition = mTmpReenterState.getInt(EXTRA_CURRENT_ARTICLE_POSITION );
                 if (startingPosition != currentPosition) {
                     // If startingPosition != currentPosition the user must have swiped to a
                     // different page in the DetailsActivity. We must update the shared element
@@ -144,8 +144,8 @@ public class ArticleListActivity extends AppCompatActivity implements
     public void onActivityReenter(int requestCode, Intent data) {
         super.onActivityReenter(requestCode, data);
         mTmpReenterState = new Bundle(data.getExtras());
-        int startingPosition = mTmpReenterState.getInt(EXTRA_STARTING_ALBUM_POSITION);
-        int currentPosition = mTmpReenterState.getInt(EXTRA_CURRENT_ALBUM_POSITION);
+        int startingPosition = mTmpReenterState.getInt(EXTRA_STARTING_ARTICLE_POSITION);
+        int currentPosition = mTmpReenterState.getInt( EXTRA_CURRENT_ARTICLE_POSITION);
         if (startingPosition != currentPosition) {
             mRecyclerView.scrollToPosition(currentPosition);
         }
@@ -254,7 +254,7 @@ public class ArticleListActivity extends AppCompatActivity implements
                    // startActivity(new Intent(Intent.ACTION_VIEW,
                       //      ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
 
-                    if (Build.VERSION.SDK_INT >= 21) {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 
                         Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
                                 ArticleListActivity.this, view.findViewById(R.id.thumbnail),

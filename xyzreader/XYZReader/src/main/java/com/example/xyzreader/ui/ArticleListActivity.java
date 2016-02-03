@@ -269,45 +269,23 @@ public class ArticleListActivity extends AppCompatActivity implements
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    
 
 
+                    mArticlePosition=vh.getAdapterPosition();
 
-
-                   // startActivity(new Intent(Intent.ACTION_VIEW,
-                      //      ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
-
-                    Intent intent = new Intent(Intent.ACTION_VIEW, ItemsContract.Items.buildItemUri(getItemId(mArticlePosition)));
+                    Intent intent = new Intent(Intent.ACTION_VIEW, ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())));
                     intent.putExtra(EXTRA_STARTING_ARTICLE_POSITION, mArticlePosition);
-
-                    if (!mIsDetailsActivityStarted) {
-                        mIsDetailsActivityStarted = true;
-
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                        if (!mIsDetailsActivityStarted) {
+                            mIsDetailsActivityStarted = true;
                             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(ArticleListActivity.this,
                                     view.findViewById(R.id.thumbnail), view.findViewById(R.id.thumbnail).getTransitionName()).toBundle());
-                        } else {
-                            startActivity(intent);
+
                         }
+                    }else {
+                        startActivity(intent);
                     }
-
-                   /* if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-
-                        Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
-                                ArticleListActivity.this, view.findViewById(R.id.thumbnail),
-                                view.findViewById(R.id.thumbnail).getTransitionName()).toBundle();
-
-                        startActivity(new Intent(Intent.ACTION_VIEW,
-                                ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())))
-                                .putExtra("transition", view.findViewById(R.id.list_cardview)
-                                        .getTransitionName())
-                                        .putExtra("EXTRA_STARTING_ARTICLE_POSITION",vh.getAdapterPosition() )
-                                ,
-
-                                bundle);
-                    } else {
-                        startActivity(new Intent(Intent.ACTION_VIEW,
-                                ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
-                    }*/
 
                 }
             });
@@ -330,7 +308,7 @@ public class ArticleListActivity extends AppCompatActivity implements
             holder.thumbnailView.setImageUrl(
                     mCursor.getString(ArticleLoader.Query.THUMB_URL),
                     ImageLoaderHelper.getInstance(ArticleListActivity.this).getImageLoader());
-            holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
+                holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
         }
 
         @Override

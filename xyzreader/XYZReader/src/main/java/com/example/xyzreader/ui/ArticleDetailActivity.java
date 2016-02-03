@@ -99,12 +99,10 @@ public class ArticleDetailActivity extends ActionBarActivity
         }
 
         mStartingPosition = getIntent().getIntExtra(EXTRA_STARTING_ARTICLE_POSITION, 0);
+        Log.e(TAG, "startposition" + mStartingPosition);
         getLoaderManager().initLoader(0, null, this);
         if (savedInstanceState == null) {
-            if (getIntent() != null && getIntent().getData() != null) {
-                mStartId = ItemsContract.Items.getItemId(getIntent().getData());
-                mSelectedItemId = mStartId;
-            }
+
             mCurrentPosition = mStartingPosition;
         }
         else
@@ -135,14 +133,20 @@ public class ArticleDetailActivity extends ActionBarActivity
                     mCurrentPosition = position;
                 }
                 mSelectedItemId = mCursor.getLong(ArticleLoader.Query._ID);
-
-            }
+    Log.e(TAG,"pageselectid"+mSelectedItemId);
+                }
         });
 
 
+        if (savedInstanceState == null) {
+            if (getIntent() != null && getIntent().getData() != null) {
+                mStartId = ItemsContract.Items.getItemId(getIntent().getData());
+                mSelectedItemId = mStartId;
+                Log.e(TAG,"Startingid"+mSelectedItemId);
+            }
+        }
 
-
-
+        Log.e(TAG, "currentposition" + mCurrentPosition);
     }
 
     /*@Override

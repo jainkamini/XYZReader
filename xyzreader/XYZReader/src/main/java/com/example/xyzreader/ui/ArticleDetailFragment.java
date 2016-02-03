@@ -10,11 +10,13 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
@@ -24,6 +26,7 @@ import android.text.method.LinkMovementMethod;
 import android.transition.Transition;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -141,7 +144,7 @@ public class ArticleDetailFragment extends Fragment implements
         mTlbr.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-           //    startPostponedEnterTransition();
+
                 getActivity().onBackPressed();
             }
         });
@@ -164,7 +167,6 @@ public class ArticleDetailFragment extends Fragment implements
     }
 
 
-
     /**
      * Returns the shared element that should be transitioned back to the previous Activity,
      * or null if the view is not visible on the screen.
@@ -172,10 +174,10 @@ public class ArticleDetailFragment extends Fragment implements
     @Nullable
     ImageView getAlbumImage() {
 
-       // if (isViewInBounds(getActivity().getWindow().getDecorView(), mPhotoView)) {
+        if (isViewInBounds(getActivity().getWindow().getDecorView(), mPhotoView)) {
             return mPhotoView;
-       // }
-      //  return null;
+        }
+       return null;
 
     }
 
@@ -191,15 +193,18 @@ public class ArticleDetailFragment extends Fragment implements
 
     private void startPostponedEnterTransition() {
         if (mItemPosition == mStartingPosition) {
-            mPhotoView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    mPhotoView.getViewTreeObserver().removeOnPreDrawListener(this);
-                    getActivity().startPostponedEnterTransition();
-                    return true;
-                }
-            });
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                mPhotoView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        mPhotoView.getViewTreeObserver().removeOnPreDrawListener(this);
+                        getActivity().startPostponedEnterTransition();
+                        return true;
+                    }
+                });
+            }
         }
+
     }
 
     /*public void scheduleStartPostponedTransition() {
@@ -255,7 +260,7 @@ public class ArticleDetailFragment extends Fragment implements
         TextView bodyView = (TextView) mRootView.findViewById(R.id.article_body);
         bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
         mPhotoView.setTransitionName(getString(R.string.transition_image) + String.valueOf(mItemPosition));
-        startPostponedEnterTransition();
+
         if (mCursor != null) {
             mRootView.setAlpha(0);
             mRootView.setVisibility(View.VISIBLE);
@@ -282,11 +287,13 @@ public class ArticleDetailFragment extends Fragment implements
 
                 @Override
                 public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
-                  //  startPostponedEnterTransition();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        startPostponedEnterTransition();
+                    }
 
                     Bitmap bitmap = imageContainer.getBitmap();
                     if (bitmap != null) {
-                         startPostponedEnterTransition();
+
                         Palette p = Palette.from(bitmap).generate();
                         mMutedColor = p.getDarkMutedColor(0xFF333333);
                         mPhotoView.setImageBitmap(imageContainer.getBitmap());

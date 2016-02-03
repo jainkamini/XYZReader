@@ -175,10 +175,10 @@ public class ArticleDetailActivity extends ActionBarActivity
         }
         return super.onOptionsItemSelected(item);
     }
+*/
 
 
-
-   public void scheduleStartPostponedTransition(final View sharedElement) {
+  /* public void scheduleStartPostponedTransition(final View sharedElement) {
         if (mCurrentPosition == mStartingPosition) {
             sharedElement.getViewTreeObserver().addOnPreDrawListener(
                     new ViewTreeObserver.OnPreDrawListener() {

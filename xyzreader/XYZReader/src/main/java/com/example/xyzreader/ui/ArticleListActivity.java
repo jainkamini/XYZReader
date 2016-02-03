@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -58,6 +59,8 @@ public class ArticleListActivity extends AppCompatActivity implements
     static final String EXTRA_STARTING_ARTICLE_POSITION = "extra_starting_item_position";
     static final String EXTRA_CURRENT_ARTICLE_POSITION = "extra_current_item_position";
     private Bundle mTmpReenterState;
+    private boolean mIsDetailsActivityStarted;
+    private int mArticlePosition;
     //private CoordinatorLayout toolbarContainerView;
 
     @SuppressWarnings("NewApi")
@@ -103,8 +106,9 @@ public class ArticleListActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
-
-        setExitSharedElementCallback(mCallback);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setExitSharedElementCallback(mCallback);
+        }
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
@@ -139,7 +143,7 @@ public class ArticleListActivity extends AppCompatActivity implements
             refresh();
         }
     }
-
+//this is call finishAfterTransition from articaldetailactivity  requestCode=RESULT_OK and data =intent
     @Override
     public void onActivityReenter(int requestCode, Intent data) {
         super.onActivityReenter(requestCode, data);
@@ -149,17 +153,21 @@ public class ArticleListActivity extends AppCompatActivity implements
         if (startingPosition != currentPosition) {
             mRecyclerView.scrollToPosition(currentPosition);
         }
-        postponeEnterTransition();
-        mRecyclerView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
-                // TODO: figure out why it is necessary to request layout here in order to get a smooth transition.
-                mRecyclerView.requestLayout();
-                startPostponedEnterTransition();
-                return true;
-            }
-        });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            postponeEnterTransition();
+            mRecyclerView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        mRecyclerView.requestLayout();
+                        startPostponedEnterTransition();
+                        return true;
+                    }
+                    return false;
+                }
+            });
+        }
     }
     private void refresh() {
         startService(new Intent(this, UpdaterService.class));
@@ -220,6 +228,20 @@ public class ArticleListActivity extends AppCompatActivity implements
                 new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(sglm);
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        int id = menuItem.getItemId();
+        if (id == android.R.id.home) {
+            ActivityCompat.finishAfterTransition(this);
+            return true;
+        }
+        return super.onOptionsItemSelected(menuItem);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mIsDetailsActivityStarted = false;
+    }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
@@ -254,7 +276,21 @@ public class ArticleListActivity extends AppCompatActivity implements
                    // startActivity(new Intent(Intent.ACTION_VIEW,
                       //      ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
 
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, ItemsContract.Items.buildItemUri(getItemId(mArticlePosition)));
+                    intent.putExtra(EXTRA_STARTING_ARTICLE_POSITION, mArticlePosition);
+
+                    if (!mIsDetailsActivityStarted) {
+                        mIsDetailsActivityStarted = true;
+
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(ArticleListActivity.this,
+                                    view.findViewById(R.id.thumbnail), view.findViewById(R.id.thumbnail).getTransitionName()).toBundle());
+                        } else {
+                            startActivity(intent);
+                        }
+                    }
+
+                   /* if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 
                         Bundle bundle = ActivityOptions.makeSceneTransitionAnimation(
                                 ArticleListActivity.this, view.findViewById(R.id.thumbnail),
@@ -264,14 +300,14 @@ public class ArticleListActivity extends AppCompatActivity implements
                                 ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition())))
                                 .putExtra("transition", view.findViewById(R.id.list_cardview)
                                         .getTransitionName())
-                                        .putExtra("EXTRA_STARTING_ALBUM_POSITION",vh.getAdapterPosition() )
+                                        .putExtra("EXTRA_STARTING_ARTICLE_POSITION",vh.getAdapterPosition() )
                                 ,
 
                                 bundle);
                     } else {
                         startActivity(new Intent(Intent.ACTION_VIEW,
                                 ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
-                    }
+                    }*/
 
                 }
             });
@@ -281,6 +317,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             mCursor.moveToPosition(position);
+            mArticlePosition = position;
             holder.thumbnailView.setTransitionName(getString(R.string.transition_image) + position);
             holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
             holder.subtitleView.setText(

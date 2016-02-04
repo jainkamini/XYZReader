@@ -269,7 +269,7 @@ public class ArticleListActivity extends AppCompatActivity implements
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    
+
 
 
                     mArticlePosition=vh.getAdapterPosition();
@@ -297,6 +297,8 @@ public class ArticleListActivity extends AppCompatActivity implements
             mCursor.moveToPosition(position);
             mArticlePosition = position;
             holder.thumbnailView.setTransitionName(getString(R.string.transition_image) + position);
+            holder.thumbnailView.setTag(getString(R.string.transition_image) + position);
+
             holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
             holder.subtitleView.setText(
                     DateUtils.getRelativeTimeSpanString(

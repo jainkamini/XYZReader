@@ -106,7 +106,7 @@ public class ArticleDetailFragment extends Fragment implements
         }
         mItemPosition=getArguments().getInt(ARG_CURRENTPOSITION);
         mIsTransitioning = savedInstanceState == null && mStartingPosition == mItemPosition;
-        mBackgroundImageFadeMillis = 1000;
+
     }
 
     public ArticleDetailActivity getActivityCast() {

@@ -46,7 +46,7 @@ import javax.security.auth.callback.Callback;
  * tablets) or a {@link ArticleDetailActivity} on handsets.
  */
 public class ArticleDetailFragment extends Fragment implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>,AppBarLayout.OnOffsetChangedListener {
     private static final String TAG = "ArticleDetailFragment";
 
     public static final String ARG_ITEM_ID = "item_id";
@@ -71,6 +71,9 @@ public class ArticleDetailFragment extends Fragment implements
     private String mTitle;
     private boolean mIsTransitioning;
     private Toolbar mTlbr;
+    private boolean mIsTitleShown = true;
+    private int mMaxScrollSize;
+
     private static final String ARG_POSITION = "transition_string_position";
     private static final String ARG_CURRENTPOSITION = "transition_current_position";
       private int mItemPosition;;
@@ -109,6 +112,25 @@ public class ArticleDetailFragment extends Fragment implements
 
     }
 
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
+        if (mMaxScrollSize == 0)
+            mMaxScrollSize = appBarLayout.getTotalScrollRange();
+
+
+        if (mMaxScrollSize + i == 0) {
+            mCTlbr.setTitle(mTitle);
+            mIsTitleShown = true;
+            mTlbr.setBackgroundColor(mMutedColor);
+        } else if(mIsTitleShown) {
+            mCTlbr.setTitle("");
+            mIsTitleShown = false;
+            mTlbr.setBackgroundColor(getResources().getColor(R.color.trans));
+        }
+//Log.e(TAG,"scrollsize "+mMaxScrollSize);
+     //   Log.e(TAG,"vericaloffset "+i);
+    }
+
     public ArticleDetailActivity getActivityCast() {
         return (ArticleDetailActivity) getActivity();
     }
@@ -134,7 +156,7 @@ public class ArticleDetailFragment extends Fragment implements
         mCTlbr = (CollapsingToolbarLayout) mRootView.findViewById(R.id.detail_collapsing);
 
         AppBarLayout appbarLayout = (AppBarLayout) mRootView.findViewById(R.id.detail_appbar);
-
+        appbarLayout.addOnOffsetChangedListener(this);
 
 
 
@@ -156,6 +178,8 @@ public class ArticleDetailFragment extends Fragment implements
                         .setType("text/plain")
                         .setText("Some sample text")
                         .getIntent(), getString(R.string.action_share)));
+
+
             }
         });
 
@@ -261,6 +285,7 @@ public class ArticleDetailFragment extends Fragment implements
         bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
         mPhotoView.setTransitionName(getString(R.string.transition_image) + String.valueOf(mItemPosition));
 
+
         if (mCursor != null) {
             mRootView.setAlpha(0);
             mRootView.setVisibility(View.VISIBLE);
@@ -352,7 +377,7 @@ public class ArticleDetailFragment extends Fragment implements
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
         mCursor = null;
         bindViews();
-        startPostponedEnterTransition();
+
     }
 
 }

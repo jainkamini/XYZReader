@@ -140,6 +140,8 @@
         app:layout_anchor="@id/article_body"
         app:layout_anchorGravity="bottom|right|end"
         android:contentDescription="@string/action_share"
+        android:elevation="@dimen/fab_elevation"
+        app:layout_behavior="com.example.xyzreader.ui.ScrollAwareFABBehavior"
         />
 
 

@@ -149,11 +149,7 @@ public class ArticleDetailActivity extends ActionBarActivity
         Log.e(TAG, "currentposition" + mCurrentPosition);
     }
 
-    /*@Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        onBackPressed();
-    }*/
+
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -169,47 +165,7 @@ public class ArticleDetailActivity extends ActionBarActivity
         super.finishAfterTransition();
     }
 
-   /* @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                supportFinishAfterTransition();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-*/
 
-
-  /* public void scheduleStartPostponedTransition(final View sharedElement) {
-        if (mCurrentPosition == mStartingPosition) {
-            sharedElement.getViewTreeObserver().addOnPreDrawListener(
-                    new ViewTreeObserver.OnPreDrawListener() {
-                        @Override
-                        public boolean onPreDraw() {
-                            sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
-                            startPostponedEnterTransition();
-                            return true;
-                        }
-                    });
-        }
-    }*/
-
-    /*public void scheduleStartPostponedTransition(final View sharedElement) {
-        if (mCurrentPosition == mStartingPosition) {
-            sharedElement.getViewTreeObserver().addOnPreDrawListener(
-                    new ViewTreeObserver.OnPreDrawListener() {
-                        @Override
-                        public boolean onPreDraw() {
-                            sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
-                            startPostponedEnterTransition();
-                            return true;
-                        }
-                    });
-        }
-    }
-*/
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         return ArticleLoader.newAllArticlesInstance(this);

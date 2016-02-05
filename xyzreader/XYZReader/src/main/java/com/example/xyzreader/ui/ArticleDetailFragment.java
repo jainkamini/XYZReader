@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
@@ -326,13 +327,14 @@ public class ArticleDetailFragment extends Fragment implements
                                 .setBackgroundColor(mMutedColor);
 
 
+
                     }
                 }
 
 
                         @Override
                 public void onErrorResponse(VolleyError volleyError) {
-                    Log.e(TAG, "Error......" + mItemPosition + mStartingPosition);
+
 
 
                 }
